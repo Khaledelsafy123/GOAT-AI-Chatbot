@@ -8,6 +8,7 @@ import type { ChatSettings, Conversation, Message } from '@/lib/chat/types'
 
 const API_URL = 'https://goat-murex.vercel.app/chat'
 const STORAGE_KEY = 'goat-conversations-v1'
+const ACTIVE_CHAT_KEY = 'goat-active-chat-v1'
 
 const createId = () =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto
@@ -30,26 +31,32 @@ export function useChat() {
 
   const abortRef = useRef<AbortController | null>(null)
 
-  // Load saved conversations once when the app opens.
+  // Restore conversations and the last active chat.
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY)
+      const savedConversations = localStorage.getItem(STORAGE_KEY)
 
-      if (saved) {
-        const parsed: unknown = JSON.parse(saved)
+      if (savedConversations) {
+        const parsed: unknown = JSON.parse(savedConversations)
 
         if (Array.isArray(parsed)) {
           setConversations(parsed as Conversation[])
         }
       }
+
+      const savedActiveId = localStorage.getItem(ACTIVE_CHAT_KEY)
+
+      if (savedActiveId) {
+        setActiveId(savedActiveId)
+      }
     } catch (error) {
-      console.error('Could not load saved conversations:', error)
+      console.error('Could not load saved chat data:', error)
     } finally {
       setIsLoaded(true)
     }
   }, [])
 
-  // Save every conversation change after the initial load.
+  // Persist conversations after loading is complete.
   useEffect(() => {
     if (!isLoaded) return
 
@@ -60,8 +67,24 @@ export function useChat() {
     }
   }, [conversations, isLoaded])
 
+  // Persist the active conversation.
+  useEffect(() => {
+    if (!isLoaded) return
+
+    try {
+      if (activeId) {
+        localStorage.setItem(ACTIVE_CHAT_KEY, activeId)
+      } else {
+        localStorage.removeItem(ACTIVE_CHAT_KEY)
+      }
+    } catch (error) {
+      console.error('Could not save active conversation:', error)
+    }
+  }, [activeId, isLoaded])
+
   const activeConversation =
     conversations.find((c) => c.id === activeId) ?? null
+
   const isBusy = pending !== null
 
   const updateMessage = useCallback(
@@ -108,6 +131,7 @@ export function useChat() {
       if (!prompt || pending) return
 
       const now = Date.now()
+
       const userMessage: Message = {
         id: createId(),
         role: 'user',
@@ -131,6 +155,7 @@ export function useChat() {
         const conversation = conversations.find(
           (c) => c.id === conversationId,
         )
+
         previousMessages = conversation?.messages ?? []
 
         setConversations((prev) =>
