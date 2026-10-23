@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -6,6 +7,7 @@ import { SEED_CONVERSATIONS } from '@/lib/chat/seed'
 import type { ChatSettings, Conversation, Message } from '@/lib/chat/types'
 
 const API_URL = 'https://goat-murex.vercel.app/chat'
+const STORAGE_KEY = 'goat-conversations-v1'
 
 const createId = () =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto
@@ -13,7 +15,8 @@ const createId = () =>
     : `${Date.now()}-${Math.random().toString(36).slice(2)}`
 
 export function useChat() {
-  const [conversations, setConversations] = useState<Conversation[]>(SEED_CONVERSATIONS)
+  const [conversations, setConversations] =
+    useState<Conversation[]>(SEED_CONVERSATIONS)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [settings, setSettings] = useState<ChatSettings>({
     streamResponses: true,
@@ -23,14 +26,50 @@ export function useChat() {
     conversationId: string
     messageId: string
   } | null>(null)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   const abortRef = useRef<AbortController | null>(null)
 
-  const activeConversation = conversations.find((c) => c.id === activeId) ?? null
+  // Load saved conversations once when the app opens.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+
+      if (saved) {
+        const parsed: unknown = JSON.parse(saved)
+
+        if (Array.isArray(parsed)) {
+          setConversations(parsed as Conversation[])
+        }
+      }
+    } catch (error) {
+      console.error('Could not load saved conversations:', error)
+    } finally {
+      setIsLoaded(true)
+    }
+  }, [])
+
+  // Save every conversation change after the initial load.
+  useEffect(() => {
+    if (!isLoaded) return
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations))
+    } catch (error) {
+      console.error('Could not save conversations:', error)
+    }
+  }, [conversations, isLoaded])
+
+  const activeConversation =
+    conversations.find((c) => c.id === activeId) ?? null
   const isBusy = pending !== null
 
   const updateMessage = useCallback(
-    (conversationId: string, messageId: string, patch: (m: Message) => Partial<Message>) => {
+    (
+      conversationId: string,
+      messageId: string,
+      patch: (m: Message) => Partial<Message>,
+    ) => {
       setConversations((prev) =>
         prev.map((c) =>
           c.id !== conversationId
@@ -89,7 +128,9 @@ export function useChat() {
       let previousMessages: Message[] = []
 
       if (conversationId) {
-        const conversation = conversations.find((c) => c.id === conversationId)
+        const conversation = conversations.find(
+          (c) => c.id === conversationId,
+        )
         previousMessages = conversation?.messages ?? []
 
         setConversations((prev) =>
@@ -117,7 +158,10 @@ export function useChat() {
         setActiveId(conversationId)
       }
 
-      setPending({ conversationId, messageId: assistantMessage.id })
+      setPending({
+        conversationId,
+        messageId: assistantMessage.id,
+      })
 
       const controller = new AbortController()
       abortRef.current = controller
@@ -130,8 +174,13 @@ export function useChat() {
           body: JSON.stringify({
             message: prompt,
             history: previousMessages
-              .filter((m) => m.status === 'complete')
-              .map((m) => ({ role: m.role, content: m.content })),
+              .filter(
+                (m) => m.status === 'complete' && m.content.trim(),
+              )
+              .map((m) => ({
+                role: m.role,
+                content: m.content,
+              })),
           }),
         })
 
@@ -150,7 +199,9 @@ export function useChat() {
           status: 'complete',
         }))
       } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') return
+        if (error instanceof Error && error.name === 'AbortError') {
+          return
+        }
 
         updateMessage(conversationId, assistantMessage.id, () => ({
           content: 'Sorry, I couldn’t get a response. Please try again.',
@@ -170,7 +221,10 @@ export function useChat() {
     (messageId: string) => {
       if (!activeConversation || pending) return
 
-      const index = activeConversation.messages.findIndex((m) => m.id === messageId)
+      const index = activeConversation.messages.findIndex(
+        (m) => m.id === messageId,
+      )
+
       const prompt = activeConversation.messages
         .slice(0, index)
         .reverse()
@@ -211,7 +265,9 @@ export function useChat() {
   const deleteConversation = useCallback(
     (id: string) => {
       if (pending?.conversationId === id) stop()
+
       setConversations((prev) => prev.filter((c) => c.id !== id))
+
       if (id === activeId) setActiveId(null)
     },
     [activeId, pending, stop],
