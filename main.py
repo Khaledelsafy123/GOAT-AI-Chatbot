@@ -90,6 +90,9 @@ MATHEMATICAL NOTATION:
 - Keep mathematical equations outside code blocks unless the user explicitly
   requests literal LaTeX source.
 - Do not escape LaTeX backslashes unnecessarily.
+- When writing exponential expressions in equations, prefer e^{...}
+  instead of \exp(...).
+- Example: write $\frac{1}{1+e^{-z}}$, not $\frac{1}{1+\exp(-z)}$.
 - Do not use dollar delimiters for ordinary currency amounts unless
   they are intended to be mathematical expressions.
 - When unsure, prefer a simple, valid mathematical expression over
