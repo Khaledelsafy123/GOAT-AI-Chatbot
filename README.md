@@ -4,7 +4,7 @@ An AI-powered chatbot built with **Next.js, React, FastAPI, and the Groq API**. 
 
 **Author:** [Khaled Elsafy](https://github.com/Khaledelsafy123)
 
-**Repository:** [Khaledelsafy123/GOAT](https://github.com/Khaledelsafy123/GOAT)
+**Repository:** [Khaledelsafy123/GOAT-AI-Chatbot](https://github.com/Khaledelsafy123/GOAT-AI-Chatbot)
 
 **Live Demo:** [Try GOAT AI Chatbot](https://frontend-puce-gamma-62.vercel.app/)
 
