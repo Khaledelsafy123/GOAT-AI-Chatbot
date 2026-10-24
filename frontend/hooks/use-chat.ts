@@ -1,9 +1,7 @@
-
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { deriveTitle } from '@/lib/chat/mock-responses'
-import { SEED_CONVERSATIONS } from '@/lib/chat/seed'
 import type { ChatSettings, Conversation, Message } from '@/lib/chat/types'
 
 const API_URL = 'https://goat-murex.vercel.app/chat'
@@ -16,8 +14,7 @@ const createId = () =>
     : `${Date.now()}-${Math.random().toString(36).slice(2)}`
 
 export function useChat() {
-  const [conversations, setConversations] =
-    useState<Conversation[]>(SEED_CONVERSATIONS)
+  const [conversations, setConversations] = useState<Conversation[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
   const [settings, setSettings] = useState<ChatSettings>({
     streamResponses: true,
@@ -31,7 +28,6 @@ export function useChat() {
 
   const abortRef = useRef<AbortController | null>(null)
 
-  // Restore conversations and the last active chat.
   useEffect(() => {
     try {
       const savedConversations = localStorage.getItem(STORAGE_KEY)
@@ -56,7 +52,6 @@ export function useChat() {
     }
   }, [])
 
-  // Persist conversations after loading is complete.
   useEffect(() => {
     if (!isLoaded) return
 
@@ -67,7 +62,6 @@ export function useChat() {
     }
   }, [conversations, isLoaded])
 
-  // Persist the active conversation.
   useEffect(() => {
     if (!isLoaded) return
 
