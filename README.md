@@ -1,43 +1,47 @@
 # GOAT AI Chatbot
 
-An AI-powered chatbot built with **Next.js, React, and FastAPI**, featuring an interactive chat interface, persistent conversation history, Markdown support, and LaTeX rendering for mathematical expressions.
+An AI-powered chatbot built with **Next.js, React, FastAPI, and the Groq API**. It features an interactive chat interface, persistent conversation history, Markdown rendering, and LaTeX support for mathematical expressions.
 
 **Author:** [Khaled Elsafy](https://github.com/Khaledelsafy123)
 
 **Repository:** [Khaledelsafy123/GOAT](https://github.com/Khaledelsafy123/GOAT)
 
+**Live Demo:** [Try GOAT AI Chatbot](https://frontend-puce-gamma-62.vercel.app/)
+
 ---
 
 ## Overview
 
-GOAT is a full-stack AI chatbot project that combines a modern web interface with a Python backend connected to the Groq API.
+GOAT is a full-stack AI chatbot that combines a modern web interface with a Python backend connected to the Groq API.
 
-The project focuses on building an end-to-end AI application, integrating frontend development, backend API design, AI model access, conversation management, and mathematical content rendering.
+The project demonstrates end-to-end AI application development, including frontend development, backend API integration, AI-generated responses, conversation management, and mathematical content rendering.
 
 ## Features
 
 - **AI-Powered Chat:** Send messages and receive AI-generated responses.
-- **Conversation History:** Preserve conversations in the browser.
-- **Markdown Rendering:** Display structured text, lists, tables, and formatted responses.
+- **Conversation History:** Maintain conversations in the browser using local storage.
+- **Markdown Rendering:** Display formatted text, lists, tables, and code blocks.
 - **LaTeX Support:** Render mathematical equations and expressions using KaTeX.
-- **REST API:** Handle chat requests through a FastAPI backend.
-- **Modern User Interface:** Built with Next.js and React.
-- **Git Version Control:** Source code managed and published on GitHub.
+- **REST API:** Process chat requests through a FastAPI backend.
+- **Modern User Interface:** Built with Next.js, React, and TypeScript.
+- **Responsive Chat Experience:** Interact with the chatbot through a modern web interface.
+- **Version Control:** Manage and track source code changes using Git and GitHub.
 
 ## Tech Stack
 
 | Technology | Purpose |
 |---|---|
 | Python | Backend development |
-| FastAPI | REST API |
+| FastAPI | Backend REST API |
 | Groq API | AI model access |
 | Next.js | Frontend framework |
 | React | User interface |
-| TypeScript | Frontend type safety |
-| Tailwind CSS | Styling |
+| TypeScript | Type safety |
+| Tailwind CSS | Interface styling |
 | React Markdown | Markdown rendering |
 | KaTeX | Mathematical equation rendering |
-| Git & GitHub | Version control and hosting |
+| Git & GitHub | Version control and source code hosting |
+| Vercel | Deployment and hosting |
 
 ## Architecture
 
@@ -60,24 +64,28 @@ AI-Generated Response
   v
 Frontend Rendering
 (Markdown + LaTeX)
+  |
+  v
+User
 ```
 
 ## Project Structure
 
 ```text
 GOAT/
-├── frontend/          # Next.js application
-│   ├── app/           # Application routes
-│   ├── components/    # UI components
-│   ├── hooks/         # Custom React hooks
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   ├── hooks/
+│   ├── lib/
 │   └── package.json
-├── main.py            # FastAPI application
-├── requirements.txt   # Python dependencies
+├── main.py
+├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
 
-*Note: The structure above highlights the main project areas; individual folders may vary.*
+*Note: The structure above provides a simplified overview of the main project files and directories.*
 
 ## Getting Started
 
@@ -103,7 +111,7 @@ Install the Python dependencies:
 pip install -r requirements.txt
 ```
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root and add your Groq API key:
 
 ```env
 GROQ_API_KEY=your_groq_api_key
@@ -115,11 +123,15 @@ Start the backend:
 uvicorn main:app --reload
 ```
 
-The backend will run at `http://127.0.0.1:8000` by default.
+By default, the backend runs at:
+
+```text
+http://127.0.0.1:8000
+```
 
 ### 3. Set Up the Frontend
 
-Open a separate terminal:
+Open a separate terminal and run:
 
 ```bash
 cd frontend
@@ -127,32 +139,38 @@ corepack pnpm install
 corepack pnpm dev
 ```
 
-Open `http://localhost:3000` in your browser.
+Open the application at:
 
-**Note:** The frontend must point to a reachable backend API. Configure the API URL in the frontend source if you want to use your local backend instead of the deployed endpoint.
+```text
+http://localhost:3000
+```
+
+**Note:** Ensure the frontend's API URL points to a reachable backend. Update the API URL in the frontend source if you want to use your local backend instead of the deployed API.
 
 ## Environment Variables
 
 | Variable | Description |
 |---|---|
-| `GROQ_API_KEY` | API key used by the backend to access Groq |
+| `GROQ_API_KEY` | API key used by the backend to access the Groq API |
 
-Keep API keys and other secrets private. Never commit your `.env` file to GitHub.
+**Security:** Never commit your `.env` file or expose API keys in your source code or public repositories.
 
 ## What I Learned
 
-- Building a full-stack application with Next.js and FastAPI.
+- Building a full-stack application using Next.js, React, and FastAPI.
 - Integrating an external AI API into a web application.
-- Managing chat requests and conversation history.
+- Designing and handling backend API requests.
+- Managing conversation history using browser local storage.
 - Rendering Markdown and mathematical expressions with LaTeX.
-- Using Git and GitHub to manage and publish a software project.
+- Using Git and GitHub for version control and collaboration.
+- Deploying a web application and connecting its frontend to a backend API.
 
 ## Author
 
 **Khaled Elsafy**
 
 - GitHub: [@Khaledelsafy123](https://github.com/Khaledelsafy123)
-- Project: [GOAT AI Chatbot](https://github.com/Khaledelsafy123/GOAT)
+- Project Repository: [GOAT AI Chatbot](https://github.com/Khaledelsafy123/GOAT)
 
 ---
 
