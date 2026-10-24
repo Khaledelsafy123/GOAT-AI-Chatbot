@@ -1,3 +1,4 @@
+
 import os
 
 from dotenv import load_dotenv
@@ -104,6 +105,20 @@ ACCURACY:
 - For Logistic Regression, distinguish predicted probabilities from class labels.
 - For Python examples, check that attributes and array shapes match the code.
 - Ensure code examples are internally consistent and executable when possible.
+
+WEB SEARCH:
+- You can use the built-in browser_search tool when available.
+- Use web search when the user explicitly requests online research,
+  current information, official documentation, or source verification.
+- Search the web when up-to-date information would materially improve accuracy.
+- Prefer official documentation and reliable sources.
+- Include source URLs in answers based on web research.
+- Clearly distinguish information verified through search from information
+  based on existing knowledge.
+- Never claim you searched, opened, or verified a page unless the search tool
+  actually provided the relevant information.
+- If search fails or returns insufficient results, clearly disclose this.
+- Do not fabricate citations, URLs, quotations, or search results.
 """
 
 
@@ -158,7 +173,8 @@ def chat(request: ChatRequest):
             model="openai/gpt-oss-20b",
             messages=messages,
             temperature=0.5,
-            max_completion_tokens=1200,
+            max_completion_tokens=2048,
+            tools=[{"type": "browser_search"}],
         )
 
         reply = response.choices[0].message.content
@@ -167,7 +183,8 @@ def chat(request: ChatRequest):
             "reply": reply or "Sorry, I couldn't generate a response."
         }
 
-    except Exception:
+    except Exception as exc:
+        print(f"Groq API error: {exc}")
         raise HTTPException(
             status_code=502,
             detail="Could not get a response from the AI provider.",
